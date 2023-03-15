@@ -114,3 +114,56 @@ As we can see, it already added the `belongs_to :sample_pack` which tells our mo
 This sets up our one-to-many association between `SamplePack` and `Sample`.
 
 We're done for now with the `Sample` model, but we will come back later.
+
+#### Routes — Let's rendering something on the screen
+
+Let's take a look at our `routes.rb` file which by now should something like this:
+
+```ruby
+Rails.application.routes.draw do
+  resources :samples
+  resources :sample_packs
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Defines the root path route ("/")
+  # root "articles#index"
+end
+```
+
+Rails added the `resources :samples` and `resources :sample_packs` to our `routes.rb` file when we ran the respective scaffold commands for our `Sample`s and `SamplePack`s.
+This tells Rails to create CRUD endpoints for our resources (samples and sample_packs are the resources).
+
+Let's go ahead and uncomment the `root "articles#index"` and change it by the following:
+
+```ruby
+Rails.application.routes.draw do
+  resources :samples
+  resources :sample_packs
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Defines the root path route ("/")
+  root "sample_packs#index"
+end
+```
+
+Now when we load our application in the `"/"` path, we'll get on the screen whatever is the `sample_packs#index` controller action and `views/sample_packs/index.html.erb` rendering.
+
+Let's head over our terminal and
+
+1. Create our database — Which we haven't done so far
+2. Run the migration files — Which we haven't done either
+3. Run the application
+
+In one single command
+
+```bash
+bin/rails db:create db:migrate && bin/dev
+```
+
+And then in our browser head over to `localhost:3000`
+
+We should be seeing a blank page with the text "Sample packs" and a button with the text "New sample pack".
+
+Nice. So far we have been able to create our project, established the association between `SamplePack` and `Sample` models and got to render the app on our browser.
+
+We'll now go ahead and setup our `SamplePack` for it's image cover.
