@@ -88,3 +88,29 @@ Rails models are Ruby classes that inherits from Rails [ActiveRecord](https://gu
 In this case `has_many :samples`, we're telling our `SamplePack` model that it is the parent of many `Samples`. And `dependent: :destroy` means that when a `SamplePack` gets deleted, all `Sample` children will be cascade deleted.
 
 We're done here with the `SamplePack` for now but we will come back later.
+#### The Sample
+
+Let's repeat the scaffolding proccess for our `Sample` but this time it'll look a little bit different. Go ahead and run:
+
+```bash
+rails g scaffold SamplePack name:string sample_pack:references
+```
+
+What `sample_pack:references` tells rails to do, is to add to the `Samples` database table, a column called `sample_pack_id` which will have a (https://www.cockroachlabs.com/blog/what-is-a-foreign-key/)[Foreign Key] as it's value.
+This way our `Sample`s will know to which `SamplePack`s they belongs by having a reference to it's parent id.
+
+This will generate our migration files, as well as the model file, views, and controller file.
+
+Let's take a look at our newly generated `models/sample.rb` file
+
+```ruby
+class Sample < ApplicationRecord
+  belongs_to :sample_pack
+end
+```
+
+As we can see, it already added the `belongs_to :sample_pack` which tells our model that a `Sample` belongs to a `SamplePack`.
+
+This sets up our one-to-many association between `SamplePack` and `Sample`.
+
+We're done for now with the `Sample` model, but we will come back later.
