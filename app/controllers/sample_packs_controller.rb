@@ -65,6 +65,6 @@ class SamplePacksController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def sample_pack_params
-      params.require(:sample_pack).permit(:name)
+      params.require(:sample_pack).permit(:name, :cover_art)
     end
 end

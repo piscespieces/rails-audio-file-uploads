@@ -17,6 +17,11 @@
   </div>
 
   <div>
+    <%= form.label :cover_art, style: "display: block" %>
+    <%= form.file_field :cover_art %>
+  </div>
+
+  <div>
     <%= form.submit %>
   </div>
 <% end %>

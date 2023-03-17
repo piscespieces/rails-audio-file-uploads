@@ -4,4 +4,9 @@
     <%= sample_pack.name %>
   </p>
 
+  <div>
+    <% if sample_pack.cover_art.attached? %>
+      <%= image_tag(sample_pack.cover_art) %>
+    <% end %>
+  </div>
 </div>

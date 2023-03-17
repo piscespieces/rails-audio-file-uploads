@@ -167,3 +167,98 @@ We should be seeing a blank page with the text "Sample packs" and a button with 
 Nice. So far we have been able to create our project, established the association between `SamplePack` and `Sample` models and got to render the app on our browser.
 
 We'll now go ahead and setup our `SamplePack` for it's image cover.
+
+### Install Active Storage
+
+We want to be able to upload a cover image, and audio files for a Sample Pack, let's start by installing Active Storage and make it work for Sample Pack cover image.
+
+First off all: Let's head over to our Gemfile and uncomment the like that has the following:
+
+```
+gem "image_processing", "~> 1.2"
+```
+
+Let's go ahead and
+
+```bash
+bundle install
+bin/rails active_storage:install
+bin/rails db:migrate
+```
+
+This will setup our project and create three tables in our database that Active Storage uses.
+Setting up a cloud provider to work with Active Storage is outside the scope of this tutorial, for more information on that check the [Active Storage documentation](https://edgeguides.rubyonrails.org/active_storage_overview.html#setup)
+
+
+#### Attach an image to a Sample Pack
+
+Let's head over to our `models/sample_pack.rb` file and add the following line
+
+```
+has_one_attached :cover_art
+```
+
+This line will setup a one-to-one relationship between our `SamplePack` and an Image.
+Note that I used `:cover_art` but this could be anything you want to use for naming.
+
+#### Update our view form
+
+In our `views/sample_packs/_form.html.erb` let's add under the `name` a form entry for image uploads, it should look like this:
+
+```
+# sample_packs/_form.html.erb
+
+<%= form_with(model: sample_pack) do |form| %>
+  <!-- ... -->
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+  <div>
+    <%= form.label :cover_art, style: "display: block" %>
+    <%= form.file_field :cover_art %>
+  </div>
+  <!-- ... -->
+<% end %>
+```
+
+This will render a `File Field` in our form which will consist in a button with the `Choose File` text that the `User` would click and it'll open a System File Explorer to choose the file that wants to up uploaded.
+
+Go ahead and pick a file to upload. You'll see how the `No file chosen` text displayed next to the file field button changes to the name of the file you uploaded. That's great!
+
+Before submitting our `SamplePack` we need to make sure we're passing the `:cover_art` to our strong parameters method in our `controller/sample_packs_controller.rb`. Let's go over there and do that. It should look something like this:
+
+```
+class SamplePacksController > ApplicationRecord
+# ...
+  # Only allow a list of trusted parameters through.
+  def sample_pack_params
+    params.require(:sample_pack).permit(:name, :cover_art)
+  end
+end
+```
+
+Now let's submit our `SamplePack` and there you are... Our first `SamplePack`. But where's the image?
+
+We need to render the attachment in our `sample_packs/_sample_pack.html.erb` view, which is the partial used by our `sample_packs/show.html.erb`.
+
+Let's update the `_sample_pack.html.erb` with the following code
+
+```
+<div id="<%= dom_id sample_pack %>">
+  <p>
+    <strong>Name:</strong>
+    <%= sample_pack.name %>
+  </p>
+
+  <div>
+    <% if sample_pack.cover_art.attached? %>
+      <%= image_tag(sample_pack.cover_art) %>
+    <% end %>
+  </div>
+</div>
+```
+
+After rendering the name of our `SamplePack` we check if there is a `cover_art` attachment in this `SamplePack`, and if there is, the `image_tag` helper should be able to render our Sample Pack cover art image.
+
+Great! Now we see our Sample Pack image.
